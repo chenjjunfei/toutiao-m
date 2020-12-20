@@ -12,6 +12,8 @@ module.exports = {
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-unused-vars': 'warn', // 把该条提示信息转换成警告信息
+    'space-before-function-paren': 0
   }
 }
