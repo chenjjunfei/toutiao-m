@@ -1,12 +1,51 @@
 <template>
-  <div>我的页面</div>
+  <div class="my-container">
+    <van-cell-group>
+      <van-cell title="单元格" value="内容" center>
+        <van-image slot="icon" fit="cover" width="50" height="50" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
+        <div slot="title">昵称</div>
+        <van-button size="small" round>编辑资料</van-button>
+      </van-cell>
+      <van-grid>
+        <van-grid-item>
+          <div slot="text">
+            <div class="icon">123</div>
+            <div class="text">头条</div>
+          </div>
+        </van-grid-item>
+        <van-grid-item>
+          <div slot="text">
+            <div class="icon">123</div>
+            <div class="text">关注</div>
+          </div>
+        </van-grid-item>
+        <van-grid-item>
+          <div slot="text">
+            <div class="icon">123</div>
+            <div class="text">粉丝</div>
+          </div>
+        </van-grid-item>
+        <van-grid-item>
+          <div slot="text">
+            <div class="icon">123</div>
+            <div class="text">获赞</div>
+          </div>
+        </van-grid-item>
+      </van-grid>
+    </van-cell-group>
+  </div>
 </template>
 
 <script>
 export default {
+  name:'MyIndex',
+  data () {
+    return {
 
+    }
+  }
 }
 
 </script>
-<style scoped>
+<style scoped lang="less">
 </style>
