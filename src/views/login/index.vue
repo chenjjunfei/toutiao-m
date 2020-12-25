@@ -10,22 +10,22 @@
   <van-field
     v-model="user.mobile"
     name="mobile"
+    icon-prefix="toutiao"
     left-icon="shouji"
     center
     placeholder="请输入手机号"
     :rules="formRulse.mobile"
-  > <van-icon class="iconfont iconshouji" slot="left-icon"></van-icon>
-  </van-field>
+  />
   <van-field
     v-model="user.code"
     clearable
     center
     name="code"
-    left-icon="iconyanzhengma"
+    icon-prefix="toutiao"
+    left-icon="yanzhengma"
     placeholder="请输入验证码"
     :rules="formRulse.code"
   >
-  <van-icon class="iconfont iconyanzhengma" slot="left-icon"></van-icon>
   <template #button>
     <van-count-down :time="1000*60" v-if="isCountDownShow" format="ss s" @finish="isCountDownShow=false"/>
     <van-button class="sent-btn" v-else size="mini" :loading="isSendSmsLoading" @click.prevent="onSendSms" round>发送验证码</van-button>
@@ -80,6 +80,7 @@ export default {
         Toast.success('登陆成功')
         // 将后端返回的用户登录状态（token等数据）放到Vuex容器中
         this.$store.commit('setUser', data.data)
+        this.$router.back()
       } catch (err) {
         Toast.fail('登录失败')
       }
