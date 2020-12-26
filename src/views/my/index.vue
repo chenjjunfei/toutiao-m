@@ -71,7 +71,6 @@ export default {
     async localCurrentUser(){
       const { data } = await getCurrentuser()
       this.currentUser = data.data
-      console.log(data)
     },
     onLogout(){
       this.$dialog.confirm({
