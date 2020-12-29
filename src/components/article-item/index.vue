@@ -15,7 +15,7 @@
       <div class="label-wrap">
         <span>{{article.aut_name}}</span>
         <span>{{article.comm_count}}评论</span>
-        <span>{{article.pubdate}}</span>
+        <span>{{article.pubdate | relativeTime }}</span>
       </div>
     </div>
     <van-image
@@ -73,6 +73,13 @@ export default {
         height: 73px;
       }
     }
+  }
+  .label-wrap{
+    font-size: 11px;
+    color: #b4b4b4;
+  }
+  .label-wrap span{
+    margin-right: 14px;
   }
 }
 </style>
