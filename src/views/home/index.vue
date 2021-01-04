@@ -3,7 +3,7 @@
     <!-- 导航栏 -->
      <van-nav-bar
      class="app-nav-bar">
-      <van-button class="search-btn" round slot="title" icon="search" type="info">搜索</van-button>
+      <van-button class="search-btn" round slot="title" icon="search" type="info" to="/search">搜索</van-button>
      </van-nav-bar>
      <!-- 文章频道列表   标签页组件有一个功能，只有第一次
      查看标签页的时候才会渲染里面的内容 -->
@@ -54,7 +54,7 @@ export default {
       // 频道列表
       channels:[],
       // 控制编辑频道的显示状态
-      isChannelShow:true
+      isChannelShow:false
     }
   },
   computed: {

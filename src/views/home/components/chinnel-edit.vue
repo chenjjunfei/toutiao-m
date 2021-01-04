@@ -83,7 +83,6 @@ export default {
   methods:{
     async loadAllChannels () {
       const { data } = await getAllChannels()
-      console.log(data)
       this.allChannels = data.data.channels
     },
     async onAdd (channel) {
