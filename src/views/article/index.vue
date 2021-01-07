@@ -7,42 +7,82 @@
       left-arrow
       @click-left="$router.back()"
     />
-    <h1 class="title">{{article.title}}</h1>
-    <van-cell center class="user-info">
-      <div slot="title" class="name">{{article.aut_name}}</div>
-      <van-image
-        class="avatar"
-        slot="icon"
-        fit="cover"
-        round
-        :src="article.aut_photo"
+    <div class="article-wrap">
+      <h1 class="title">{{article.title}}</h1>
+      <van-cell center class="user-info">
+        <div slot="title" class="name">{{article.aut_name}}</div>
+        <van-image
+          class="avatar"
+          slot="icon"
+          fit="cover"
+          round
+          :src="article.aut_photo"
+        />
+        <div slot="label" class="pubdate">{{article.pubdate | relativeTime}}</div>
+        <van-button
+          round
+          :icon="article.is_followed ? '' : 'plus'"
+          size="small"
+          class="follow-btn"
+          :loading="isFollowLoading"
+          @click="onFollow"
+          :type="article.is_followed ? 'default' : 'info'"
+        >{{article.is_followed ? '已关注' : '关注'}}
+        </van-button>
+      </van-cell>
+      <div
+      class="content markdown-body"
+      v-html="article.content"
+      ref="article-content"
+      >
+      </div>
+      <!-- 文章评论区域 -->
+      <comment-list
+        :source="articleId"
       />
-      <div slot="label" class="pubdate">{{article.pubdate | relativeTime}}</div>
+    </div>
+
+    <!-- 底部区域 -->
+    <div class="article-bottom">
       <van-button
+        class="comment-btn"
+        type="default"
         round
-        :icon="article.is_followed ? '' : 'plus'"
         size="small"
-        class="follow-btn"
-        :loading="isFollowLoading"
-        @click="onFollow"
-        :type="article.is_followed ? 'default' : 'info'"
-      >{{article.is_followed ? '已关注' : '关注'}}
+      >写评论
       </van-button>
-    </van-cell>
-    <div
-     class="content markdown-body"
-     v-html="article.content"
-     ref="article-content"
-    >
+      <van-icon
+        name="comment-o"
+        info="123"
+        color="#777"
+      />
+      <van-icon
+        :color="article.is_collected ? 'orange' : '#777'"
+        :name="article.is_collected ? 'star' : 'star-o'"
+        @click="onCollect"
+      />
+      <van-icon
+        :color="article.attitude ? 'skyblue' : '#777'"
+        :name="article.attitude ? 'good-job' : 'good-job-o'"
+        @click="onGood"
+      />
+      <van-icon name="share" color="#777777"></van-icon>
     </div>
   </div>
 </template>
 
 <script>
 import './github-markdown.css'
-import { getArticleById } from '@/api/article'
+import {
+  getArticleById,
+  addCollect,
+  deleteCollect,
+  addLike,
+  deleteLike
+} from '@/api/article'
 import { ImagePreview } from 'vant'
 import { addFollow, deleteFollow } from '@/api/user'
+import CommentList from './components/comment-list'
 // 在组件中获取动态路由参数：
 // 方式一：this.$route.params.xxx
 // 方式二：props 传参
@@ -53,7 +93,11 @@ export default {
       // 文章数据对象
       article:{},
       // 关注用户按钮loading状态
-      isFollowLoading: false
+      isFollowLoading: false,
+      // 收藏的loading状态
+      isCollectLoading: false,
+      // 点赞状态
+      isGoodLoading: false
     }
   },
   methods:{
@@ -99,6 +143,34 @@ export default {
         this.article.is_followed = true
       }
       this.isFollowLoading = false
+    },
+    async onCollect () {
+      this.isCollectLoading = true
+      if (this.article.is_collected) {
+        // 已收藏，取消收藏
+        await deleteCollect(this.articleId)
+        this.article.is_collected = false
+      } else {
+      // 没有收藏，添加收藏
+        await addCollect(this.articleId)
+        this.article.is_collected = true
+      }
+      this.isCollectLoading = false
+      this.$toast.success(`${this.article.is_collected ? '' : '取消'}收藏成功`)
+    },
+    async onGood () {
+      this.isGoodLoading = true
+      if (this.article.attitude === 1) {
+        // 已点赞，取消点赞
+        await deleteLike(this.articleId)
+        this.article.attitude = 0
+      } else {
+      // 没有点赞，添加点赞
+        await addLike(this.articleId)
+        this.article.attitude = 1
+      }
+      this.isGoodLoading = false
+      this.$toast.success(`${this.article.attitude === 1 ? '' : '取消'}点赞成功`)
     }
   },
   created () {
@@ -112,11 +184,21 @@ export default {
   },
   watch:{},
   computed:{},
-  components:{}
+  components:{
+    CommentList
+  }
 }
 
 </script>
 <style scoped lang='less'>
+.article-wrap{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 46px;
+  bottom: 44px;
+  overflow-y: auto;
+}
 .title{
   font-size: 20px;
   color: #3a3a3a;
@@ -146,5 +228,33 @@ export default {
 .markdown-body{
   padding: 14px;
   background-color: #fff;
+}
+.article-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-sizing: border-box;
+  height: 44px;
+  border-top: 1px solid #d8d8d8;
+  background-color: #fff;
+  .comment-btn {
+    width: 141px;
+    height: 23px;
+    border: 1px solid #eeeeee;
+    font-size: 15px;
+    line-height: 23px;
+    color: #a7a7a7;
+  }
+  .van-icon {
+    font-size: 20px;
+    .van-info {
+      font-size: 11px;
+      background-color: #e22829;
+    }
+  }
 }
 </style>
