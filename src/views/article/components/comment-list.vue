@@ -11,6 +11,7 @@
         v-for="(comment, index) in list"
         :key="index"
         :comment="comment"
+        @reply-click="$emit('reply-click', $event)"
       />
       <!-- <van-cell
         v-for="(comment, index) in list"
@@ -28,7 +29,6 @@ export default {
   name: 'CommentList',
   data () {
     return {
-      list: [],
       loading: false,
       finished: false,
       offset: null,
@@ -40,9 +40,9 @@ export default {
     //  1. 请求获取数据
       const { data } = await getComment({
         // 评论类型，a-对文章(article)的评论，c-对评论(comment)的回复
-        type: 'a',
+        type: this.type,
         // 源id，文章id或评论id
-        source: this.source,
+        source: this.source.toString(),
         // 获取评论数据的偏移量，值为评论id，
         // 表示从此id的数据向后取，不传表示从第一页开始读取数据
         offset:this.offset,
@@ -50,6 +50,7 @@ export default {
         // 不传表示采用后端服务设定的默认每页数据量
         limit: this.limit
       })
+      this.$emit('update-total-count', data.data.total_count)
       //  2. 把数据放到列表中
       const { results } = data.data
       this.list.push(...results)
@@ -70,6 +71,18 @@ export default {
     source: {
       type: [String, Number, Object],
       required: true
+    },
+    // 获取文章评论，使用字符a
+    // 获取评论回复，使用字符c
+    type: {
+      type: String,
+      default: 'a'
+    },
+    list: {
+      type: Array,
+      default: function () {
+        return []
+      }
     }
   },
   watch:{},

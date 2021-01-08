@@ -4,7 +4,7 @@
       <van-cell :border="false" class="base-info" center>
         <van-image class="avatar" slot="icon" fit="cover" round :src="currentUser.photo" />
         <div class="setname" slot="title">{{currentUser.name}}</div>
-        <van-button class="edit-btn" size="small" round>编辑资料</van-button>
+        <van-button class="edit-btn" size="small" round to="/user/profile">编辑资料</van-button>
       </van-cell>
       <van-grid class="data-info" :border="false">
         <van-grid-item class="data-info-item">

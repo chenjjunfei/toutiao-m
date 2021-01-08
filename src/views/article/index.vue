@@ -39,6 +39,9 @@
       <!-- 文章评论区域 -->
       <comment-list
         :source="articleId"
+        :list="CommentList"
+        @update-total-count="totalCommentCount = $event"
+        @reply-click="onReplyClick"
       />
     </div>
 
@@ -49,11 +52,12 @@
         type="default"
         round
         size="small"
+        @click="isShow = true"
       >写评论
       </van-button>
       <van-icon
         name="comment-o"
-        info="123"
+        :badge="totalCommentCount"
         color="#777"
       />
       <van-icon
@@ -68,6 +72,28 @@
       />
       <van-icon name="share" color="#777777"></van-icon>
     </div>
+    <!-- 发布评论 -->
+    <van-popup
+      v-model="isShow"
+      position="bottom"
+    >
+      <post-comment
+        :target="articleId"
+        @post-success="onPostSuccess"
+      />
+    </van-popup>
+    <!-- 评论回复 -->
+    <van-popup
+      v-model="isReplyShow"
+      position="bottom"
+    >
+      <comment-reply
+        v-if="isReplyShow"
+        :comment="replyComment"
+        @close="isReplyShow = false"
+        :article-id="articleId"
+      />
+    </van-popup>
   </div>
 </template>
 
@@ -83,6 +109,8 @@ import {
 import { ImagePreview } from 'vant'
 import { addFollow, deleteFollow } from '@/api/user'
 import CommentList from './components/comment-list'
+import PostComment from './components/post-comment'
+import CommentReply from './components/comment-reply'
 // 在组件中获取动态路由参数：
 // 方式一：this.$route.params.xxx
 // 方式二：props 传参
@@ -97,7 +125,17 @@ export default {
       // 收藏的loading状态
       isCollectLoading: false,
       // 点赞状态
-      isGoodLoading: false
+      isGoodLoading: false,
+      // 控制发布评论的显示状态
+      isShow: false,
+      // 文章评论列表
+      CommentList: [],
+      // 评论总数量
+      totalCommentCount: 0,
+      // 评论回复弹出层
+      isReplyShow: false,
+      // 当前回复评论对象
+      replyComment:{}
     }
   },
   methods:{
@@ -171,6 +209,18 @@ export default {
       }
       this.isGoodLoading = false
       this.$toast.success(`${this.article.attitude === 1 ? '' : '取消'}点赞成功`)
+    },
+    onPostSuccess (comment) {
+      // 把发布成功的评论数据对象放到评论列表顶部
+      this.CommentList.unshift(comment)
+      // 更新评论的总数量
+      this.totalCommentCount++
+      this.isShow = false
+    },
+    onReplyClick (comment) {
+      this.replyComment = comment
+      // 展示回复内容
+      this.isReplyShow = true
     }
   },
   created () {
@@ -185,7 +235,9 @@ export default {
   watch:{},
   computed:{},
   components:{
-    CommentList
+    CommentList,
+    PostComment,
+    CommentReply
   }
 }
 
